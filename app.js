@@ -3,27 +3,27 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-var indexRouter = require("./routes/index");
+
+const server = require("./utils/serverHandler");
+
 require("dotenv").config();
 
-var app = express();
-
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-
-app.use("/", indexRouter);
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
+const app = express()
+  .use(logger("dev"))
+  .get("*", server.serverHandler)
+  .post("*", server.serverHandler)
+  .put("*", server.serverHandler)
+  .delete("*", server.serverHandler);
 
 const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
   console.log(`App listening to ${PORT}....`);
   console.log("Press Ctrl+C to quit.");
+});
+
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+  next(createError(404));
 });
 
 // error handler
@@ -34,7 +34,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  res.send("error");
 });
 
 module.exports = app;
