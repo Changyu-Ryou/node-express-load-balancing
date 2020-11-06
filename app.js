@@ -10,6 +10,7 @@ require("dotenv").config();
 
 const app = express()
   .use(logger("dev"))
+  .use(server.logMiddleware)
   .get("*", server.serverHandler)
   .post("*", server.serverHandler)
   .put("*", server.serverHandler)
