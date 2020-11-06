@@ -1,9 +1,9 @@
 var request = require("request");
 
-const serverList = [
+let serverList = [
   "http://localhost:5000",
-  "http://localhost:500",
-  "http://localhost:50",
+  "http://xn--ht4ba298ahc.xn--hu5b25b77nvwc.xn--3e0b707e:5000",
+  "http://localhost:3000",
 ];
 
 let cur = 0;
@@ -12,7 +12,7 @@ let errServer = new Array();
 // req, res logging
 const logMiddleware = (req, res, next) => {
   const start = Date.now();
-  console.log("Start", serverList[cur], "서버 번호" + cur);
+  console.log("Start req server => " + cur);
   res.on("finish", () => {
     console.log("Completed", req.method, req.url, Date.now() - start);
     console.log("\n");
@@ -25,7 +25,7 @@ const serverHandler = (req, res) => {
   const serverReq = request({ url: serverList[cur] + req.url }).on(
     "error",
     (error) => {
-      healthCheck(req, res);
+      healthCheck(req, res, error);
     }
   );
   req.pipe(serverReq).pipe(res);
@@ -33,7 +33,7 @@ const serverHandler = (req, res) => {
 };
 
 // server health check
-function healthCheck(req, res) {
+function healthCheck(req, res, error) {
   let serverNum = prevServer(cur);
 
   const err = serverList.splice(serverNum, 1);
@@ -57,4 +57,4 @@ function prevServer(cur) {
   return serverNum;
 }
 
-module.exports = { serverHandler, logMiddleware };
+module.exports = { serverHandler, logMiddleware, serverList, errServer };

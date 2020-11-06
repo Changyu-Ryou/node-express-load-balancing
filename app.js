@@ -5,6 +5,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 const server = require("./utils/serverHandler");
+const checkErrorServer = require("./utils/checkErrorServer");
 
 require("dotenv").config();
 
@@ -26,6 +27,8 @@ app.listen(PORT, () => {
 app.use(function (req, res, next) {
   next(createError(404));
 });
+
+checkErrorServer.start();
 
 // error handler
 app.use(function (err, req, res, next) {
